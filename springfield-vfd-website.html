@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Springfield Volunteer Fire Department</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .pulse { animation: pulse 2s ease-in-out infinite; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .slide-up { animation: slideUp 0.3s ease-out; }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    .bounce { animation: bounce 2s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div id="root"></div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Navigation Component
+    function Navbar({ currentPage, setCurrentPage }) {
+      const [mobileOpen, setMobileOpen] = useState(false);
+      const [scrolled, setScrolled] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      const links = [
+        { id: 'home', label: 'Home' },
+        { id: 'about', label: 'About Us' },
+        { id: 'join', label: 'Join Us' },
+        { id: 'events', label: 'Events' },
+        { id: 'contact', label: 'Contact' },
+      ];
+
+      return (
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-lg' : 'bg-transparent'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-20">
+              <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentPage('home')}>
+                <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center text-2xl shadow-lg">
+                  🚒
+                </div>
+                <div>
+                  <p className={`font-bold text-lg ${scrolled ? 'text-gray-900' : 'text-white'}`}>Springfield VFD</p>
+                  <p className={`text-xs ${scrolled ? 'text-gray-500' : 'text-red-200'}`}>Protecting Our Community Since 1952</p>
+                </div>
+              </div>
+              
+              <div className="hidden md:flex items-center gap-1">
+                {links.map(link => (
+                  <button
+                    key={link.id}
+                    onClick={() => setCurrentPage(link.id)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      currentPage === link.id 
+                        ? 'bg-red-600 text-white' 
+                        : scrolled 
+                          ? 'text-gray-700 hover:bg-gray-100' 
+                          : 'text-white hover:bg-white/20'
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </div>
+
+              <button 
+                className="md:hidden p-2"
+                onClick={() => setMobileOpen(!mobileOpen)}
+              >
+                <svg className={`w-6 h-6 ${scrolled ? 'text-gray-900' : 'text-white'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {mobileOpen && (
+            <div className="md:hidden bg-white border-t shadow-lg">
+              {links.map(link => (
+                <button
+                  key={link.id}
+                  onClick={() => { setCurrentPage(link.id); setMobileOpen(false); }}
+                  className={`block w-full text-left px-6 py-3 ${currentPage === link.id ? 'bg-red-50 text-red-600 font-medium' : 'text-gray-700'}`}
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </nav>
+      );
+    }
+
+    // Home Page
+    function HomePage({ setCurrentPage }) {
+      return (
+        <div>
+          {/* Hero Section */}
+          <div className="relative h-screen min-h-[600px] flex items-center justify-center bg-gradient-to-br from-gray-900 via-red-900 to-gray-900">
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1584277261846-c6a1672ed979?w=1920')] bg-cover bg-center opacity-30"></div>
+            <div className="relative z-10 text-center px-4 max-w-4xl">
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                Protecting Springfield<br/>
+                <span className="text-red-400">Since 1952</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                45 dedicated volunteers serving our community 24/7 with courage, commitment, and compassion.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button 
+                  onClick={() => setCurrentPage('join')}
+                  className="px-8 py-4 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  Become a Volunteer
+                </button>
+                <button 
+                  onClick={() => setCurrentPage('about')}
+                  className="px-8 py-4 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all backdrop-blur border border-white/30"
+                >
+                  Learn More
+                </button>
+              </div>
+            </div>
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bounce">
+              <svg className="w-8 h-8 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Stats Section */}
+          <div className="bg-white py-16">
+            <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              {[
+                { value: '45', label: 'Active Volunteers' },
+                { value: '300+', label: 'Calls Annually' },
+                { value: '72', label: 'Years of Service' },
+                { value: '24/7', label: 'Always Ready' },
+              ].map((stat, i) => (
+                <div key={i}>
+                  <p className="text-4xl md:text-5xl font-bold text-red-600">{stat.value}</p>
+                  <p className="text-gray-600 mt-2">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Services Section */}
+          <div className="bg-gray-100 py-20">
+            <div className="max-w-7xl mx-auto px-4">
+              <h2 className="text-4xl font-bold text-center text-gray-900 mb-4">Our Services</h2>
+              <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">We provide comprehensive emergency services to protect lives and property in our community.</p>
+              <div className="grid md:grid-cols-3 gap-8">
+                {[
+                  { icon: '🔥', title: 'Fire Suppression', desc: 'Rapid response to structure fires, wildfires, and vehicle fires with modern equipment and trained personnel.' },
+                  { icon: '🚑', title: 'Emergency Medical', desc: 'First responder medical services with CPR, AED, and basic life support capabilities.' },
+                  { icon: '🔧', title: 'Rescue Services', desc: 'Vehicle extrication, water rescue, and technical rescue operations for complex emergencies.' },
+                ].map((service, i) => (
+                  <div key={i} className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all">
+                    <div className="text-5xl mb-4">{service.icon}</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
+                    <p className="text-gray-600">{service.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="bg-red-600 py-20">
+            <div className="max-w-4xl mx-auto px-4 text-center">
+              <h2 className="text-4xl font-bold text-white mb-6">Ready to Make a Difference?</h2>
+              <p className="text-xl text-red-100 mb-10">Join our team of dedicated volunteers and help protect your community.</p>
+              <button 
+                onClick={() => setCurrentPage('join')}
+                className="px-10 py-4 bg-white text-red-600 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg text-lg"
+              >
+                Start Your Journey Today
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // About Page
+    function AboutPage() {
+      return (
+        <div>
+          <div className="bg-gradient-to-br from-gray-900 to-red-900 pt-32 pb-20">
+            <div className="max-w-7xl mx-auto px-4">
+              <h1 className="text-5xl font-bold text-white mb-4">About Us</h1>
+              <p className="text-xl text-gray-300">Learn about our history, mission, and the people who make it happen.</p>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 py-16">
+            <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Our History</h2>
+                <p className="text-gray-600 mb-4">
+                  Springfield Volunteer Fire Department was established in 1952 by a group of dedicated community members who recognized the need for organized fire protection in our growing town.
+                </p>
+                <p className="text-gray-600 mb-4">
+                  What started with a single hand-drawn fire cart has evolved into a modern department with three stations, multiple apparatus, and 45 active volunteer firefighters.
+                </p>
+                <p className="text-gray-600">
+                  Through seven decades, our commitment to protecting lives and property has never wavered. We continue to train, improve, and serve our community with pride.
+                </p>
+              </div>
+              <div className="bg-gray-200 rounded-2xl h-80 flex items-center justify-center">
+                <span className="text-6xl">🏛️</span>
+              </div>
+            </div>
+
+            <div className="bg-red-50 rounded-2xl p-10 mb-20">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Our Mission</h2>
+              <p className="text-xl text-gray-700 text-center max-w-3xl mx-auto">
+                "To protect the lives, property, and environment of our community through fire prevention, education, and emergency response, while maintaining the highest standards of professionalism and volunteer service."
+              </p>
+            </div>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Department Leadership</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { name: 'Chief Robert Martinez', role: 'Fire Chief', years: '25 years of service' },
+                { name: 'Deputy Chief Sarah Chen', role: 'Deputy Chief', years: '18 years of service' },
+                { name: 'Captain Mike Thompson', role: 'Training Captain', years: '15 years of service' },
+              ].map((leader, i) => (
+                <div key={i} className="text-center">
+                  <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span className="text-4xl">👨‍🚒</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">{leader.name}</h3>
+                  <p className="text-red-600 font-medium">{leader.role}</p>
+                  <p className="text-gray-500 text-sm">{leader.years}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Join Page
+    function JoinPage() {
+      return (
+        <div>
+          <div className="bg-gradient-to-br from-gray-900 to-red-900 pt-32 pb-20">
+            <div className="max-w-7xl mx-auto px-4">
+              <h1 className="text-5xl font-bold text-white mb-4">Join Our Team</h1>
+              <p className="text-xl text-gray-300">Become a volunteer firefighter and make a difference in your community.</p>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 py-16">
+            <div className="grid lg:grid-cols-2 gap-12 mb-20">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Requirements</h2>
+                <ul className="space-y-4">
+                  {[
+                    'Must be at least 18 years old',
+                    'Valid driver\'s license',
+                    'Pass background check',
+                    'Live within 10 miles of station',
+                    'Commit to training schedule',
+                    'No prior experience necessary',
+                  ].map((req, i) => (
+                    <li key={i} className="flex items-center gap-3">
+                      <span className="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm">✓</span>
+                      <span className="text-gray-700">{req}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">What You'll Learn</h2>
+                <ul className="space-y-4">
+                  {[
+                    'Fire behavior and suppression techniques',
+                    'Hose operations and ladder skills',
+                    'Search and rescue procedures',
+                    'Emergency medical response',
+                    'Hazardous materials awareness',
+                    'CPR and First Aid certification',
+                  ].map((skill, i) => (
+                    <li key={i} className="flex items-center gap-3">
+                      <span className="w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm">🔥</span>
+                      <span className="text-gray-700">{skill}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="bg-gray-900 rounded-2xl p-10 text-center">
+              <h2 className="text-3xl font-bold text-white mb-4">Next Training Academy</h2>
+              <p className="text-5xl font-bold text-red-400 mb-4">March 1, 2025</p>
+              <p className="text-gray-400 mb-8">12-week program • Tuesday & Thursday evenings • 7:00 PM - 10:00 PM</p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button className="px-8 py-4 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-all">
+                  Apply Now
+                </button>
+                <button className="px-8 py-4 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all border border-white/30">
+                  Info Session: Jan 30
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Events Page
+    function EventsPage() {
+      const events = [
+        { date: 'Jan 30', title: 'Training Academy Info Session', time: '7:00 PM', location: 'Station 1', type: 'training', desc: 'Learn about becoming a volunteer firefighter. Meet current members and tour the station.' },
+        { date: 'Feb 5', title: 'Monthly Department Meeting', time: '6:30 PM', location: 'Station 1', type: 'meeting', desc: 'Regular monthly meeting for all active members.' },
+        { date: 'Feb 15', title: 'Pancake Breakfast Fundraiser', time: '8:00 AM - 12:00 PM', location: 'Community Center', type: 'fundraiser', desc: 'All-you-can-eat pancakes! Proceeds support equipment purchases.' },
+        { date: 'Feb 22', title: 'CPR Certification Class', time: '9:00 AM', location: 'Station 2', type: 'training', desc: 'Free CPR training for community members. Registration required.' },
+        { date: 'Mar 1', title: 'Training Academy Begins', time: '7:00 PM', location: 'Station 1', type: 'training', desc: 'First night of the 12-week volunteer firefighter training program.' },
+      ];
+
+      const typeColors = {
+        training: 'bg-red-100 text-red-700 border-red-200',
+        meeting: 'bg-blue-100 text-blue-700 border-blue-200',
+        fundraiser: 'bg-green-100 text-green-700 border-green-200',
+      };
+
+      return (
+        <div>
+          <div className="bg-gradient-to-br from-gray-900 to-red-900 pt-32 pb-20">
+            <div className="max-w-7xl mx-auto px-4">
+              <h1 className="text-5xl font-bold text-white mb-4">Events</h1>
+              <p className="text-xl text-gray-300">Upcoming trainings, meetings, and community events.</p>
+            </div>
+          </div>
+
+          <div className="max-w-4xl mx-auto px-4 py-16">
+            <div className="flex gap-4 mb-8 flex-wrap">
+              <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">🔥 Training</span>
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">📋 Meeting</span>
+              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">💰 Fundraiser</span>
+            </div>
+
+            <div className="space-y-6">
+              {events.map((event, i) => (
+                <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="bg-gray-900 text-white p-6 md:w-32 flex flex-col items-center justify-center">
+                      <span className="text-3xl font-bold">{event.date.split(' ')[1]}</span>
+                      <span className="text-gray-400">{event.date.split(' ')[0]}</span>
+                    </div>
+                    <div className="p-6 flex-1">
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
+                          <div className="flex items-center gap-4 text-gray-500 text-sm mt-2">
+                            <span>🕐 {event.time}</span>
+                            <span>📍 {event.location}</span>
+                          </div>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium border ${typeColors[event.type]}`}>
+                          {event.type}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 mt-3">{event.desc}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Contact Page
+    function ContactPage() {
+      return (
+        <div>
+          <div className="bg-gradient-to-br from-gray-900 to-red-900 pt-32 pb-20">
+            <div className="max-w-7xl mx-auto px-4">
+              <h1 className="text-5xl font-bold text-white mb-4">Contact Us</h1>
+              <p className="text-xl text-gray-300">Get in touch with Springfield Volunteer Fire Department.</p>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 py-16">
+            <div className="bg-red-600 rounded-2xl p-8 text-white text-center mb-12">
+              <p className="text-2xl font-bold mb-2">🚨 For Emergencies, Call 911 🚨</p>
+              <p className="text-red-100">This contact form is for non-emergency inquiries only.</p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-12">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Send Us a Message</h2>
+                <form className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                      <input type="text" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                      <input type="text" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                    <select className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white">
+                      <option>General Inquiry</option>
+                      <option>Volunteering</option>
+                      <option>Station Tours</option>
+                      <option>Donations</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                    <textarea rows={5} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"></textarea>
+                  </div>
+                  <button type="submit" className="w-full py-4 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-all">
+                    Send Message
+                  </button>
+                </form>
+              </div>
+
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-xl">📍</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Station 1 (Headquarters)</h3>
+                      <p className="text-gray-600">123 Main Street<br/>Springfield, ID 83701</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-xl">📞</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Non-Emergency Phone</h3>
+                      <p className="text-gray-600">(208) 555-FIRE (3473)</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-xl">✉️</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Email</h3>
+                      <p className="text-gray-600">info@springfieldvfd.org</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-xl">🕐</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Office Hours</h3>
+                      <p className="text-gray-600">Monday - Friday: 9:00 AM - 5:00 PM<br/>Station staffed 24/7</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 bg-gray-200 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-gray-500">📍 Map would go here</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Footer Component
+    function Footer() {
+      return (
+        <footer className="bg-gray-900 text-white py-12">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="grid md:grid-cols-4 gap-8 mb-8">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">🚒</div>
+                  <span className="font-bold">Springfield VFD</span>
+                </div>
+                <p className="text-gray-400 text-sm">Protecting our community with pride since 1952.</p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-4">Quick Links</h4>
+                <ul className="space-y-2 text-gray-400 text-sm">
+                  <li><a href="#" className="hover:text-white">About Us</a></li>
+                  <li><a href="#" className="hover:text-white">Join Us</a></li>
+                  <li><a href="#" className="hover:text-white">Events</a></li>
+                  <li><a href="#" className="hover:text-white">Contact</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-4">Emergency</h4>
+                <p className="text-gray-400 text-sm mb-2">For emergencies, always call:</p>
+                <p className="text-2xl font-bold text-red-500">911</p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-4">Non-Emergency</h4>
+                <p className="text-gray-400 text-sm">(208) 555-FIRE</p>
+                <p className="text-gray-400 text-sm">info@springfieldvfd.org</p>
+              </div>
+            </div>
+            <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-gray-500 text-sm">© 2025 Springfield Volunteer Fire Department. All rights reserved.</p>
+              <p className="text-gray-600 text-xs flex items-center gap-2">
+                Powered by <span className="text-orange-400 font-medium">VolunteerFirefighter.org</span> + AWS
+              </p>
+            </div>
+          </div>
+        </footer>
+      );
+    }
+
+    // Chatbot Component
+    function Chatbot() {
+      const [isOpen, setIsOpen] = useState(false);
+      const [messages, setMessages] = useState([
+        { from: 'bot', text: "Hi! I'm the Springfield VFD assistant. How can I help you today?" }
+      ]);
+      const [input, setInput] = useState('');
+      const [isTyping, setIsTyping] = useState(false);
+      const messagesEndRef = useRef(null);
+
+      const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      };
+
+      useEffect(() => {
+        scrollToBottom();
+      }, [messages]);
+
+      const responses = {
+        volunteer: "Great question! To become a volunteer, you must be 18+, have a valid driver's license, and pass a background check. Our next Training Academy starts March 1st. Would you like me to connect you with our recruitment coordinator?",
+        training: "Our Training Academy runs for 12 weeks on Tuesday and Thursday evenings from 7-10 PM. The next session starts March 1st, 2025. We also have an info session on January 30th!",
+        events: "Upcoming events include: Jan 30 - Training Info Session, Feb 15 - Pancake Breakfast Fundraiser, Mar 1 - Training Academy begins. Want details on any specific event?",
+        contact: "You can reach us at (208) 555-FIRE for non-emergencies, or email info@springfieldvfd.org. For emergencies, always call 911!",
+        tour: "We'd love to show you around! Station tours are available by appointment. Would you like me to have someone call you to schedule a visit?",
+        donate: "Thank you for wanting to support us! You can donate online, by mail, or attend our fundraising events like the Pancake Breakfast on Feb 15th. Every contribution helps!",
+        default: "I can help with information about volunteering, training, events, station tours, or donations. What would you like to know more about?"
+      };
+
+      const getResponse = (text) => {
+        const lower = text.toLowerCase();
+        if (lower.includes('volunteer') || lower.includes('join') || lower.includes('become')) return responses.volunteer;
+        if (lower.includes('training') || lower.includes('academy') || lower.includes('learn')) return responses.training;
+        if (lower.includes('event') || lower.includes('calendar') || lower.includes('when')) return responses.events;
+        if (lower.includes('contact') || lower.includes('phone') || lower.includes('email') || lower.includes('reach')) return responses.contact;
+        if (lower.includes('tour') || lower.includes('visit') || lower.includes('station')) return responses.tour;
+        if (lower.includes('donat') || lower.includes('support') || lower.includes('give')) return responses.donate;
+        return responses.default;
+      };
+
+      const handleSend = () => {
+        if (!input.trim()) return;
+        
+        setMessages(prev => [...prev, { from: 'user', text: input }]);
+        setInput('');
+        setIsTyping(true);
+
+        setTimeout(() => {
+          setIsTyping(false);
+          setMessages(prev => [...prev, { from: 'bot', text: getResponse(input) }]);
+        }, 1000 + Math.random() * 1000);
+      };
+
+      return (
+        <div className="fixed bottom-6 left-6 z-50">
+          {isOpen && (
+            <div className="slide-up mb-4 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-red-600 to-red-700 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    🚒
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white">Springfield VFD</p>
+                    <p className="text-xs text-red-200 flex items-center gap-1">
+                      <span className="w-2 h-2 bg-green-400 rounded-full pulse"></span> Online
+                    </p>
+                  </div>
+                </div>
+                <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Messages */}
+              <div className="h-80 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                {messages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+                      msg.from === 'user' 
+                        ? 'bg-red-600 text-white rounded-br-md' 
+                        : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-md'
+                    }`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-md shadow-sm border border-gray-100">
+                      <span className="flex gap-1">
+                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Input */}
+              <div className="p-4 bg-white border-t border-gray-100">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                    placeholder="Type your message..."
+                    className="flex-1 px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                  <button 
+                    onClick={handleSend}
+                    className="px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400 mt-2 text-center">Powered by AI • For emergencies call 911</p>
+              </div>
+            </div>
+          )}
+
+          {/* Toggle Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className={`w-16 h-16 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 ${
+              isOpen ? 'bg-gray-700' : 'bg-red-600'
+            }`}
+          >
+            {isOpen ? (
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            )}
+          </button>
+          
+          {!isOpen && (
+            <div className="absolute -top-2 -right-2 w-5 h-5 bg-green-500 rounded-full border-2 border-white pulse"></div>
+          )}
+        </div>
+      );
+    }
+
+    // Main App
+    function App() {
+      const [currentPage, setCurrentPage] = useState('home');
+
+      useEffect(() => {
+        window.scrollTo(0, 0);
+      }, [currentPage]);
+
+      const renderPage = () => {
+        switch (currentPage) {
+          case 'home': return <HomePage setCurrentPage={setCurrentPage} />;
+          case 'about': return <AboutPage />;
+          case 'join': return <JoinPage />;
+          case 'events': return <EventsPage />;
+          case 'contact': return <ContactPage />;
+          default: return <HomePage setCurrentPage={setCurrentPage} />;
+        }
+      };
+
+      return (
+        <div className="min-h-screen">
+          <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+          <main>{renderPage()}</main>
+          <Footer />
+          <Chatbot />
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
